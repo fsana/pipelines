@@ -9,7 +9,7 @@ pipeline {
     }
 
     environment {
-        PYTHONPATH = "${WORKSPACE}/pipelines"
+        PYTHONPATH = "${WORKSPACE}"
     }
 
     stages {
