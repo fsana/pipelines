@@ -24,7 +24,9 @@ pipeline {
 }
 
 def buildApp() {
-    def appImage - docker.build("fsana/my-app:${BUILD_NUMBER}")
+    dir ('.') {
+        def appImage - docker.build("fsana/my-app:${BUILD_NUMBER}")
+    }
 }
 
 def deploy(environment) {
