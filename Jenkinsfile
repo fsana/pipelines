@@ -5,7 +5,7 @@ pipeline {
     agent any 
     
     options {
-        disableConcurentBuilds()
+        disableConcurrentBuilds()
     }
 
     stages {
