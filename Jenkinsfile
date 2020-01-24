@@ -8,19 +8,55 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+    environment {
+        PYTHONPATH = "${WORKSPACE}/pipelines"
+    }
+
     stages {
+        stage ("Test - Unit Tests") {
+            steps {
+                runUnitTests()
+            }
+        }
         stage("Build") {
             steps {
                 buildApp()
             }
         }
 
-        stage("Deploy-Dev") {
+        stage("Deploy - Dev") {
             steps {
                 deploy('dev')
             }
         }
+
+        stage("Test - UAT Dev") {
+            steps {
+                runUAT(8888)
+            }
+        }
+
+        stage("Deploy - Stage") {
+            steps {
+                deploy('stage')
+            }
+        }
+
+        stage("Test - UAT Stage") {
+            steps {
+                runUAT(88)
+            }
+        }
      }
+}
+
+def runUnitTests() {
+    sh "pip3 install --no-cache-dir -r requirements.txt"
+    sh "python3 tests/test_flask_app.py"
+}
+
+def runUAT(port) {
+    sh "tests/runUAT.sh ${port}"
 }
 
 def buildApp() {
@@ -33,6 +69,9 @@ def deploy(environment) {
     if ("${environment}"=='dev') {
         containerName = "app_dev"
         port = "8888"
+    } else if("${environment}" == 'stage') {
+        containerName = "app_stage"
+        port = "88"
     }
     else {
         println "Environment not valid"
