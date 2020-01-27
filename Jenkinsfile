@@ -47,7 +47,31 @@ pipeline {
                 runUAT(8889)
             }
         }
+
+        stage("Approve") {
+            steps {
+                approve()
+            }
+        }
+
+        stage("Deploy - Live") {
+            steps {
+                deploy('live')
+            }
+        }
+
+        stage("Test - UAT Live") {
+            steps {
+                runUAT(8890)
+            }
+        }
      }
+}
+
+def approve() {
+    timeout(time: 1, unit: 'DAYS') {
+        input('Do you want to deploy to live environment?')
+    }
 }
 
 def runUnitTests() {
@@ -69,9 +93,12 @@ def deploy(environment) {
     if ("${environment}"=='dev') {
         containerName = "app_dev"
         port = "8888"
-    } else if("${environment}" == 'stage') {
+    } else if ("${environment}" == 'stage') {
         containerName = "app_stage"
         port = "8889"
+    } else if ("${environment}" == 'live') {
+        containerName = "app_live"
+        port = "8890"
     }
     else {
         println "Environment not valid"
